@@ -20,7 +20,7 @@ Patch0:		libftdi-0.17-multilib.patch
 Patch1:		libftdi-0.19-libusb.patch
 Patch2:		libftdi-0.19-fix-doxygen-errors-patch.patch
 
-BuildRequires:	libusb-devel doxygen boost-devel python-devel swig
+BuildRequires:	libusb-devel doxygen boost-devel python-devel swig cmake
 Requires(pre):	shadow-utils
 
 %package -n	%{libname}
