@@ -1,13 +1,13 @@
 %global	major	1
-%global	minor	19
+%global	minor	20
 %global	micro	0
 %global	libname	%mklibname ftdi %{major}
 %global	devname	%mklibname -d ftdi
 %global	libcpp	%mklibname ftdip %{major}
 
 Name:		libftdi
-Version:	0.19
-Release:	2
+Version:	0.20
+Release:	1
 Summary:	Library to program and control the FTDI USB controller
 
 Group:		System/Libraries
@@ -100,9 +100,8 @@ rmdir %{buildroot}%{_prefix}/site-packages/
 %{_libdir}/libftdi.a
 %{_libdir}/libftdipp.so
 %{_libdir}/libftdipp.a
-%dir %{_includedir}/%{name}
-%{_includedir}/%{name}/*.h
-%{_includedir}/%{name}/*.hpp
+%{_includedir}/*.h
+%{_includedir}/*.hpp
 %{_libdir}/pkgconfig/libftdi.pc
 %{_libdir}/pkgconfig/libftdipp.pc
 %{_mandir}/man3/*
