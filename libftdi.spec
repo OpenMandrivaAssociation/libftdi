@@ -114,3 +114,15 @@ rmdir %{buildroot}%{_prefix}/site-packages/
 getent group plugdev >/dev/null || groupadd -r plugdev
 exit 0
 
+
+
+%changelog
+* Mon Apr 02 2012 Alexander Khrukin <akhrukin@mandriva.org> 0.20-1
++ Revision: 788734
+- version update 0.20
+
+* Sun Aug 07 2011 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.19-2
++ Revision: 693614
+- add missing buildrequires
+- imported package libftdi
+
