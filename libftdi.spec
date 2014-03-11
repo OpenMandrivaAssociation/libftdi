@@ -1,62 +1,105 @@
-%global	major	1
-%global	minor	20
-%global	micro	0
-%global	libname	%mklibname ftdi %{major}
-%global	devname	%mklibname -d ftdi
-%global	libcpp	%mklibname ftdip %{major}
+%global major 1
+%global libname %mklibname ftdi %{major}
+%global libcpp %mklibname ftdip %{major}
+%global devname %mklibname ftdi -d
 
+Summary:	Library to program and control the FTDI USB controller
 Name:		libftdi
 Version:	0.20
-Release:	1
-Summary:	Library to program and control the FTDI USB controller
-
+Release:	2
+License:	GPLv2+
 Group:		System/Libraries
-License:	LGPLv2
-URL:		http://www.intra2net.com/de/produkte/opensource/ftdi/
+Url:		http://www.intra2net.com/de/produkte/opensource/ftdi/
 Source0:	http://www.intra2net.com/de/produkte/opensource/ftdi/TGZ/%{name}-%{version}.tar.gz
 Source1:	no_date_footer.html
 Patch0:		libftdi-0.17-multilib.patch
 # update to recent libusb
 Patch1:		libftdi-0.19-libusb.patch
 Patch2:		libftdi-0.19-fix-doxygen-errors-patch.patch
-
-BuildRequires:	libusb-devel doxygen boost-devel python-devel swig cmake
+BuildRequires:	cmake
+BuildRequires:	doxygen
+BuildRequires:	swig
+BuildRequires:	boost-devel
+BuildRequires:	pkgconfig(libusb)
+BuildRequires:	pkgconfig(python)
 Requires(pre):	shadow-utils
-
-%package -n	%{libname}
-Summary:	%{summary}
-Group:		System/Libraries
-
-%package -n	%{devname}
-Summary:	Header files and static libraries for libftdi
-Group:		Development/C
-Requires:	%{libname} = %{EVRD}
-Requires:	%{libcpp} = %{EVRD}
-
-%package -n	python-%{name}
-Summary:	Libftdi library Python binding
-Group:		Development/Python
-
-%package -n	%{libcpp}
-Summary:	Libftdi library C++ binding
-Group:		Development/C++
+Conflicts:	%{_lib}ftdi1 < 0.20-2
 
 %description
 A library (using libusb) to talk to FTDI's FT2232C,
 FT232BM and FT245BM type chips including the popular bitbang mode.
 
-%description -n	%{libname}
+%files
+%config(noreplace) %{_sysconfdir}/udev/rules.d/99-libftdi.rules
+
+%pre
+getent group plugdev >/dev/null || groupadd -r plugdev
+exit 0
+
+#----------------------------------------------------------------------------
+
+%package -n %{libname}
+Summary:	Library to program and control the FTDI USB controller
+Group:		System/Libraries
+
+%description -n %{libname}
 A library (using libusb) to talk to FTDI's FT2232C,
 FT232BM and FT245BM type chips including the popular bitbang mode.
+
+%files -n %{libname}
+%{_libdir}/libftdi.so.%{major}*
+
+#----------------------------------------------------------------------------
+
+%package -n %{libcpp}
+Summary:	Libftdi library C++ binding
+Group:		Development/C++
+
+%description -n %{libcpp}
+Libftdi library C++ language binding.
+
+%files -n %{libcpp}
+%{_libdir}/libftdipp.so.%{major}*
+
+#----------------------------------------------------------------------------
+
+%package -n %{devname}
+Summary:	Header files and static libraries for libftdi
+Group:		Development/C
+Requires:	%{libname} = %{EVRD}
+Requires:	%{libcpp} = %{EVRD}
 
 %description -n %{devname}
 Header files and static libraries for libftdi
 
+%files -n %{devname}
+%doc build/doc/html
+%doc AUTHORS ChangeLog README
+%{_bindir}/libftdi-config
+%{_libdir}/libftdi.so
+%{_libdir}/libftdi.a
+%{_libdir}/libftdipp.so
+%{_libdir}/libftdipp.a
+%{_includedir}/*.h
+%{_includedir}/*.hpp
+%{_libdir}/pkgconfig/libftdi.pc
+%{_libdir}/pkgconfig/libftdipp.pc
+%{_mandir}/man3/*
+
+#----------------------------------------------------------------------------
+
+%package -n	python-%{name}
+Summary:	Libftdi library Python binding
+Group:		Development/Python
+
 %description -n	python-%{name}
 Libftdi Python Language bindings.
 
-%description -n	%{libcpp}
-Libftdi library C++ language binding.
+%files -n python-%{name}
+%{py_platsitedir}/ftdi.py
+%{py_platsitedir}/_ftdi.so
+
+#----------------------------------------------------------------------------
 
 %prep
 %setup -q
@@ -65,7 +108,6 @@ sed -e 's/usb_device/usb/g' -i packages/99-libftdi.rules
 %patch0 -p1 -b .multilib~
 %patch1 -p1 -b .libusb~
 %patch2 -p1 -b .doxygen~
-autoreconf -if
 
 %build
 %cmake
@@ -82,47 +124,4 @@ install -p -m644 packages/99-libftdi.rules -D %{buildroot}%{_sysconfdir}/udev/ru
 install -d %{buildroot}%{py_platsitedir}
 mv %{buildroot}%{_prefix}/site-packages/* %{buildroot}%{py_platsitedir}
 rmdir %{buildroot}%{_prefix}/site-packages/
-
-%files -n %{libname}
-%{_libdir}/libftdi.so.%{major}
-%{_libdir}/libftdi.so.%{major}.%{minor}.%{micro}*
-%config(noreplace) %{_sysconfdir}/udev/rules.d/99-libftdi.rules
-
-%files -n %{libcpp}
-%{_libdir}/libftdipp.so.%{major}
-%{_libdir}/libftdipp.so.%{major}.%{minor}.%{micro}
-
-%files -n %{devname}
-%doc build/doc/html
-%doc AUTHORS ChangeLog README
-%{_bindir}/libftdi-config
-%{_libdir}/libftdi.so
-%{_libdir}/libftdi.a
-%{_libdir}/libftdipp.so
-%{_libdir}/libftdipp.a
-%{_includedir}/*.h
-%{_includedir}/*.hpp
-%{_libdir}/pkgconfig/libftdi.pc
-%{_libdir}/pkgconfig/libftdipp.pc
-%{_mandir}/man3/*
-
-%files -n python-%{name}
-%{py_platsitedir}/ftdi.py
-%{py_platsitedir}/_ftdi.so
-
-%pre
-getent group plugdev >/dev/null || groupadd -r plugdev
-exit 0
-
-
-
-%changelog
-* Mon Apr 02 2012 Alexander Khrukin <akhrukin@mandriva.org> 0.20-1
-+ Revision: 788734
-- version update 0.20
-
-* Sun Aug 07 2011 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.19-2
-+ Revision: 693614
-- add missing buildrequires
-- imported package libftdi
 
