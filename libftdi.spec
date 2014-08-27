@@ -68,6 +68,7 @@ Summary:	Header files and static libraries for libftdi
 Group:		Development/C
 Requires:	%{libname} = %{EVRD}
 Requires:	%{libcpp} = %{EVRD}
+%rename		%{_lib}ftdi-devel
 
 %description -n %{devname}
 Header files and static libraries for libftdi
