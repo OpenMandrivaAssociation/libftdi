@@ -1,25 +1,24 @@
-%global major 1
-%global libname %mklibname ftdi %{major}
-%global libcpp %mklibname ftdip %{major}
-%global devname %mklibname ftdi -d
+%global	major	2
+%global	api	1
+%global	libname	%mklibname ftdi %{api} %{major}
+%global	libcpp	%mklibname ftdip %{api} %{major}
+%global	devname	%mklibname ftdi %{api} -d
 
 Summary:	Library to program and control the FTDI USB controller
 Name:		libftdi
-Version:	0.20
-Release:	2
+Version:	1.1
+Release:	1
 License:	GPLv2+
 Group:		System/Libraries
 Url:		http://www.intra2net.com/de/produkte/opensource/ftdi/
-Source0:	http://www.intra2net.com/de/produkte/opensource/ftdi/TGZ/%{name}-%{version}.tar.gz
+Source0:	http://www.intra2net.com/en/developer/%{name}/download/%{name}1-%{version}.tar.bz2
 Source1:	no_date_footer.html
-Patch0:		libftdi-0.17-multilib.patch
-# update to recent libusb
-Patch1:		libftdi-0.19-libusb.patch
-Patch2:		libftdi-0.19-fix-doxygen-errors-patch.patch
+Patch0:		libftdi-1.1-multilib.patch
 BuildRequires:	cmake
 BuildRequires:	doxygen
 BuildRequires:	swig
 BuildRequires:	boost-devel
+BuildRequires:	pkgconfig(libconfuse)
 BuildRequires:	pkgconfig(libusb)
 BuildRequires:	pkgconfig(python)
 Requires(pre):	shadow-utils
@@ -30,7 +29,8 @@ A library (using libusb) to talk to FTDI's FT2232C,
 FT232BM and FT245BM type chips including the popular bitbang mode.
 
 %files
-%config(noreplace) %{_sysconfdir}/udev/rules.d/99-libftdi.rules
+%{_bindir}/ftdi_eeprom
+%config(noreplace) %{_udevrulesdir}/99-libftdi.rules
 
 %pre
 getent group plugdev >/dev/null || groupadd -r plugdev
@@ -47,7 +47,7 @@ A library (using libusb) to talk to FTDI's FT2232C,
 FT232BM and FT245BM type chips including the popular bitbang mode.
 
 %files -n %{libname}
-%{_libdir}/libftdi.so.%{major}*
+%{_libdir}/libftdi1.so.%{major}*
 
 #----------------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ Group:		Development/C++
 Libftdi library C++ language binding.
 
 %files -n %{libcpp}
-%{_libdir}/libftdipp.so.%{major}*
+%{_libdir}/libftdipp1.so.%{major}*
 
 #----------------------------------------------------------------------------
 
@@ -75,15 +75,19 @@ Header files and static libraries for libftdi
 %files -n %{devname}
 %doc build/doc/html
 %doc AUTHORS ChangeLog README
-%{_bindir}/libftdi-config
-%{_libdir}/libftdi.so
-%{_libdir}/libftdi.a
-%{_libdir}/libftdipp.so
-%{_libdir}/libftdipp.a
-%{_includedir}/*.h
-%{_includedir}/*.hpp
-%{_libdir}/pkgconfig/libftdi.pc
-%{_libdir}/pkgconfig/libftdipp.pc
+%dir %{_datadir}/libftdi
+%doc %{_datadir}/libftdi/examples
+%{_bindir}/libftdi1-config
+%{_libdir}/libftdi1.so
+%{_libdir}/libftdi1.a
+%{_libdir}/libftdipp1.so
+%{_libdir}/libftdipp1.a
+%dir %{_includedir}/libftdi1
+%{_includedir}/libftdi1/*.h
+%{_includedir}/libftdi1/*.hpp
+%{_libdir}/pkgconfig/libftdi1.pc
+%{_libdir}/pkgconfig/libftdipp1.pc
+%{_libdir}/cmake/libftdi1
 %{_mandir}/man3/*
 
 #----------------------------------------------------------------------------
@@ -96,18 +100,18 @@ Group:		Development/Python
 Libftdi Python Language bindings.
 
 %files -n python-%{name}
-%{py_platsitedir}/ftdi.py
-%{py_platsitedir}/_ftdi.so
+%{py_platsitedir}/ftdi1.py
+%{py_platsitedir}/_ftdi1.so
 
 #----------------------------------------------------------------------------
 
 %prep
-%setup -q
+%setup -q -n %{name}1-%{version}
 #kernel does not provide usb_device anymore
 sed -e 's/usb_device/usb/g' -i packages/99-libftdi.rules
+sed -e 's/GROUP="plugdev"/TAG+="uaccess"/g' -i packages/99-libftdi.rules
+
 %patch0 -p1 -b .multilib~
-%patch1 -p1 -b .libusb~
-%patch2 -p1 -b .doxygen~
 
 %build
 %cmake
@@ -116,12 +120,5 @@ sed -e 's/usb_device/usb/g' -i packages/99-libftdi.rules
 %install
 %makeinstall_std -C build
 #no man install
-pushd build/doc/man/man3
-for man in *.3; do install -p -m644 $man -D %{buildroot}%{_mandir}/man3/$man; done
-popd
-install -p -m644 packages/99-libftdi.rules -D %{buildroot}%{_sysconfdir}/udev/rules.d/99-libftdi.rules
-# fix cmake later..
-install -d %{buildroot}%{py_platsitedir}
-mv %{buildroot}%{_prefix}/site-packages/* %{buildroot}%{py_platsitedir}
-rmdir %{buildroot}%{_prefix}/site-packages/
-
+for man in build/doc/man/man3/*.3; do install -p -m644 $man -D %{buildroot}%{_mandir}/man3/`basename $man`; done
+install -p -m644 packages/99-libftdi.rules -D %{buildroot}%{_udevrulesdir}/99-libftdi.rules

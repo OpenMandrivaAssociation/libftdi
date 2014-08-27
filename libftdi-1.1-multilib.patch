@@ -1,5 +1,5 @@
---- libftdi-0.16/libftdi-config.in	2009-02-06 17:40:10.000000000 +0200
-+++ libftdi-0.16-mod/libftdi-config.in	2009-07-31 13:08:08.000000000 +0300
+--- libftdi1-1.1/libftdi1-config.in.multilib~	2014-02-05 17:24:11.000000000 +0100
++++ libftdi1-1.1/libftdi1-config.in	2014-08-27 08:20:28.947713753 +0200
 @@ -1,7 +1,7 @@
  #!/bin/sh
  
@@ -10,7 +10,7 @@
  exec_prefix_set=no
  
  usage()
-@@ -46,17 +46,14 @@
+@@ -46,17 +46,14 @@ while test $# -gt 0; do
        echo_exec_prefix=yes
        ;;
      --version)
@@ -31,7 +31,7 @@
        ;;
      *)
        usage 1 1>&2
-@@ -71,9 +68,3 @@
+@@ -71,9 +68,3 @@ fi
  if test "$echo_exec_prefix" = "yes"; then
  	echo $exec_prefix
  fi
@@ -39,6 +39,5 @@
 -	echo $includes
 -fi
 -if test "$echo_libs" = "yes"; then
--	echo -L@libdir@ -lftdi @LIBS@
+-	echo -L@libdir@ -lftdi1 @LIBS@
 -fi
-
