@@ -6,8 +6,8 @@
 
 Summary:	Library to program and control the FTDI USB controller
 Name:		libftdi
-Version:	1.1
-Release:	2
+Version:	1.5
+Release:	1
 License:	GPLv2+
 Group:		System/Libraries
 Url:		http://www.intra2net.com/de/produkte/opensource/ftdi/
@@ -30,7 +30,7 @@ FT232BM and FT245BM type chips including the popular bitbang mode.
 
 %files
 %{_bindir}/ftdi_eeprom
-%config(noreplace) %{_udevrulesdir}/99-libftdi.rules
+%config(noreplace) %{_udevrulesdir}/*-libftdi.rules
 
 %pre
 getent group plugdev >/dev/null || groupadd -r plugdev
@@ -60,6 +60,7 @@ Libftdi library C++ language binding.
 
 %files -n %{libcpp}
 %{_libdir}/libftdipp1.so.%{major}*
+%{_libdir}/libftdipp1.so.3
 
 #----------------------------------------------------------------------------
 
@@ -74,9 +75,7 @@ Requires:	%{libcpp} = %{EVRD}
 Header files and static libraries for libftdi
 
 %files -n %{devname}
-%doc build/doc/html
 %doc AUTHORS ChangeLog README
-%dir %{_datadir}/libftdi
 %doc %{_datadir}/libftdi/examples
 %{_bindir}/libftdi1-config
 %{_libdir}/libftdi1.so
@@ -84,12 +83,11 @@ Header files and static libraries for libftdi
 %{_libdir}/libftdipp1.so
 %{_libdir}/libftdipp1.a
 %dir %{_includedir}/libftdi1
+%{_includedir}/libftdipp1/*hpp
 %{_includedir}/libftdi1/*.h
-%{_includedir}/libftdi1/*.hpp
 %{_libdir}/pkgconfig/libftdi1.pc
 %{_libdir}/pkgconfig/libftdipp1.pc
 %{_libdir}/cmake/libftdi1
-%{_mandir}/man3/*
 
 #----------------------------------------------------------------------------
 
@@ -103,6 +101,7 @@ Libftdi Python Language bindings.
 %files -n python-%{name}
 %{py_platsitedir}/ftdi1.py
 %{py_platsitedir}/_ftdi1.so
+%{py_platsitedir}/__pycache__/*
 
 #----------------------------------------------------------------------------
 
@@ -111,15 +110,28 @@ Libftdi Python Language bindings.
 #kernel does not provide usb_device anymore
 sed -e 's/usb_device/usb/g' -i packages/99-libftdi.rules
 sed -e 's/GROUP="plugdev"/TAG+="uaccess"/g' -i packages/99-libftdi.rules
-
-%patch0 -p1 -b .multilib~
+%autopatch -p1
 
 %build
-%cmake
-%make
+%cmake -DFTDIPP=ON -DPYTHON_BINDINGS=ON
+%make_build
 
 %install
-%makeinstall_std -C build
-#no man install
-for man in build/doc/man/man3/*.3; do install -p -m644 $man -D %{buildroot}%{_mandir}/man3/`basename $man`; done
-install -p -m644 packages/99-libftdi.rules -D %{buildroot}%{_udevrulesdir}/99-libftdi.rules
+%make_install -C build
+
+# Cleanup examples
+rm -f %{buildroot}%{_bindir}/simple
+rm -f %{buildroot}%{_bindir}/bitbang
+rm -f %{buildroot}%{_bindir}/bitbang2
+rm -f %{buildroot}%{_bindir}/bitbang_ft2232
+rm -f %{buildroot}%{_bindir}/bitbang_cbus
+rm -f %{buildroot}%{_bindir}/find_all
+rm -f %{buildroot}%{_bindir}/find_all_pp
+rm -f %{buildroot}%{_bindir}/baud_test
+rm -f %{buildroot}%{_bindir}/serial_read
+rm -f %{buildroot}%{_bindir}/serial_test
+rm -rf %{buildroot}%{_datadir}/doc/libftdi1/example.conf
+rm -rf %{buildroot}%{_datadir}/doc/libftdipp1/example.conf
+	
+mkdir -p %{buildroot}/lib/udev/rules.d/
+install -pm 0644 packages/99-libftdi.rules %{buildroot}/lib/udev/rules.d/69-libftdi.rules
