@@ -135,3 +135,7 @@ rm -rf %{buildroot}%{_datadir}/doc/libftdipp1/example.conf
 	
 mkdir -p %{buildroot}/lib/udev/rules.d/
 install -pm 0644 packages/99-libftdi.rules %{buildroot}/lib/udev/rules.d/69-libftdi.rules
+
+
+# fix includes
+sed -i 's!#include <ftdi.h>!#include <libftdi1/ftdi.h>!g' %{buildroot}%{_includedir}/libftdipp1/ftdi.hpp
