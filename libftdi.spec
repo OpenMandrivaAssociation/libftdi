@@ -12,8 +12,6 @@ License:	GPLv2+
 Group:		System/Libraries
 Url:		http://www.intra2net.com/de/produkte/opensource/ftdi/
 Source0:	http://www.intra2net.com/en/developer/%{name}/download/%{name}1-%{version}.tar.bz2
-Source1:	no_date_footer.html
-Patch0:		libftdi-1.1-multilib.patch
 BuildRequires:	cmake
 BuildRequires:	doxygen
 BuildRequires:	swig
