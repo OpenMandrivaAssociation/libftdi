@@ -10,7 +10,7 @@ Version:	1.5
 Release:	4
 License:	GPLv2+
 Group:		System/Libraries
-Url:		http://www.intra2net.com/de/produkte/opensource/ftdi/
+Url:		https://www.intra2net.com/de/produkte/opensource/ftdi/
 Source0:	http://www.intra2net.com/en/developer/%{name}/download/%{name}1-%{version}.tar.bz2
 # http://developer.intra2net.com/git/?p=libftdi;a=commitdiff;h=cdb28383402d248dbc6062f4391b038375c52385;hp=5c2c58e03ea999534e8cb64906c8ae8b15536c30
 Patch0:		libftdi-1.5-fix_pkgconfig_path.patch
