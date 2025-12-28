@@ -22,6 +22,7 @@ BuildRequires:	boost-devel
 BuildRequires:	pkgconfig(libconfuse)
 BuildRequires:	pkgconfig(libusb)
 BuildRequires:	pkgconfig(python)
+BuildRequires:  python%{pyver}dist(setuptools)
 Conflicts:	%{_lib}ftdi1 < 0.20-2
 
 %description
