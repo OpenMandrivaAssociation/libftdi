@@ -7,13 +7,11 @@
 Summary:	Library to program and control the FTDI USB controller
 Name:		libftdi
 Version:	1.5
-Release:	6
+Release:	7
 License:	GPLv2+
 Group:		System/Libraries
 Url:		https://www.intra2net.com/en/developer/libftdi/
 Source0:	http://www.intra2net.com/en/developer/%{name}/download/%{name}1-%{version}.tar.bz2
-# http://developer.intra2net.com/git/?p=libftdi;a=commitdiff;h=cdb28383402d248dbc6062f4391b038375c52385;hp=5c2c58e03ea999534e8cb64906c8ae8b15536c30
-Patch0:		libftdi-1.5-fix_pkgconfig_path.patch
 BuildRequires:  make
 BuildRequires:	cmake
 BuildRequires:	doxygen
@@ -24,6 +22,11 @@ BuildRequires:	pkgconfig(libusb)
 BuildRequires:	pkgconfig(python)
 BuildRequires:  python%{pyver}dist(setuptools)
 Conflicts:	%{_lib}ftdi1 < 0.20-2
+
+%patchlist
+# http://developer.intra2net.com/git/?p=libftdi;a=commitdiff;h=cdb28383402d248dbc6062f4391b038375c52385;hp=5c2c58e03ea999534e8cb64906c8ae8b15536c30
+libftdi-1.5-fix_pkgconfig_path.patch
+https://git.liquid.me.uk/?p=gentoo/.git;a=blob_plain;f=dev-embedded/libftdi/files/libftdi-1.5-swig-4.3.patch
 
 %description
 A library (using libusb) to talk to FTDI's FT2232C,
