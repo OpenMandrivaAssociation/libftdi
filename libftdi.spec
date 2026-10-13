@@ -106,6 +106,8 @@ Libftdi Python Language bindings.
 %autosetup -n %{name}1-%{version} -p1
 # switch to uaccess control
 sed -i -e 's/GROUP="plugdev"/TAG+="uaccess"/g' packages/99-libftdi.rules
+# SWIG 4.5 no longer defines the Python 2 PyInt_* names.
+sed -i 's/PyInt_AsLong/PyLong_AsLong/g' python/ftdi1.i
 
 %build
 %cmake -DFTDIPP=ON -DPYTHON_BINDINGS=ON
